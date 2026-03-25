@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Management](#management)
+  - [Banner](#banner)
   - [Management Interfaces](#management-interfaces)
   - [DNS Domain](#dns-domain)
   - [IP Name Servers](#ip-name-servers)
@@ -15,6 +16,7 @@
   - [AAA Authorization](#aaa-authorization)
 - [Monitoring](#monitoring)
   - [TerminAttr Daemon](#terminattr-daemon)
+  - [Logging](#logging)
 - [MLAG](#mlag)
   - [MLAG Summary](#mlag-summary)
   - [MLAG Device Configuration](#mlag-device-configuration)
@@ -43,6 +45,15 @@
   - [VRF Instances Device Configuration](#vrf-instances-device-configuration)
 
 ## Management
+
+### Banner
+
+#### MOTD Banner
+
+```text
+You shall not pass. Unless you are authorized. Then you shall pass.
+EOF
+```
 
 ### Management Interfaces
 
@@ -217,6 +228,31 @@ daemon TerminAttr
    no shutdown
 ```
 
+### Logging
+
+#### Logging Servers and Features Summary
+
+| Type | Level |
+| -----| ----- |
+
+| VRF | Source Interface |
+| --- | ---------------- |
+| default | Management0 |
+
+| VRF | Hosts | Ports | Protocol | SSL-profile |
+| --- | ----- | ----- | -------- | ----------- |
+| default | 10.200.0.108 | Default | UDP | - |
+| default | 10.200.1.108 | Default | UDP | - |
+
+#### Logging Servers and Features Device Configuration
+
+```eos
+!
+logging host 10.200.0.108
+logging host 10.200.1.108
+logging source-interface Management0
+```
+
 ## MLAG
 
 ### MLAG Summary
@@ -318,6 +354,7 @@ vlan 4094
 | Ethernet1 | MLAG_s1-leaf1_Ethernet1 | *trunk | *- | *- | *MLAG | 1 |
 | Ethernet2 | L2_s1-spine1_Ethernet3 | *trunk | *10,20 | *- | *- | 2 |
 | Ethernet3 | L2_s1-spine2_Ethernet3 | *trunk | *10,20 | *- | *- | 2 |
+| Ethernet4 | SERVER_s1-host1_eth2 | *access | *10 | *- | *- | 4 |
 | Ethernet6 | MLAG_s1-leaf1_Ethernet6 | *trunk | *- | *- | *MLAG | 1 |
 
 *Inherited from Port-Channel Interface
@@ -341,6 +378,11 @@ interface Ethernet3
    no shutdown
    channel-group 2 mode active
 !
+interface Ethernet4
+   description SERVER_s1-host1_eth2
+   no shutdown
+   channel-group 4 mode active
+!
 interface Ethernet6
    description MLAG_s1-leaf1_Ethernet6
    no shutdown
@@ -357,6 +399,7 @@ interface Ethernet6
 | --------- | ----------- | ---- | ----- | ----------- | ------------| --------------------- | ------------------ | ------- | -------- |
 | Port-Channel1 | MLAG_s1-leaf1_Port-Channel1 | trunk | - | - | MLAG | - | - | - | - |
 | Port-Channel2 | L2_SPINES_Port-Channel2 | trunk | 10,20 | - | - | - | - | 2 | - |
+| Port-Channel4 | SERVER_s1-host1 | access | 10 | - | - | - | - | 4 | - |
 
 #### Port-Channel Interfaces Device Configuration
 
@@ -376,6 +419,15 @@ interface Port-Channel2
    switchport mode trunk
    switchport
    mlag 2
+!
+interface Port-Channel4
+   description SERVER_s1-host1
+   no shutdown
+   switchport access vlan 10
+   switchport mode access
+   switchport
+   mlag 4
+   spanning-tree portfast
 ```
 
 ### VLAN Interfaces

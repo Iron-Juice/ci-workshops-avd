@@ -3,6 +3,12 @@ aaa_authorization:
     default: local
 aaa_root:
   disabled: true
+banners:
+  motd: 'You shall not pass. Unless you are authorized. Then you shall pass.
+
+    EOF
+
+    '
 config_end: true
 daemon_terminattr:
   cvaddrs:
@@ -72,6 +78,30 @@ ethernet_interfaces:
   peer: s1-leaf4
   peer_interface: Ethernet3
   peer_type: l2leaf
+- name: Ethernet7
+  description: P2P_WANCORE_Ethernet2
+  shutdown: false
+  mtu: 1500
+  ip_address: 10.0.0.31/31
+  ospf_network_point_to_point: true
+  ospf_area: 0.0.0.0
+  peer: WANCORE
+  peer_interface: Ethernet2
+  peer_type: other
+  switchport:
+    enabled: false
+- name: Ethernet8
+  description: P2P_WANCORE_Ethernet2
+  shutdown: false
+  mtu: 1500
+  ip_address: 10.0.0.35/31
+  ospf_network_point_to_point: true
+  ospf_area: 0.0.0.0
+  peer: WANCORE
+  peer_interface: Ethernet2
+  peer_type: other
+  switchport:
+    enabled: false
 hostname: s1-spine2
 ip_domain_lookup:
   source_interfaces:
@@ -90,6 +120,15 @@ local_users:
   sha512_password: $6$arista$9H44pXh9dw3PtmKgnJPSKlx5iDgU1Rv3WOC0bd3xPOfamBnMHPcSH1mB3TmXnkbUDL3jo6oFir4rU4TiLaSzC/
   ssh_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCOHFd5aTvmRI7MLNZv9oG6jeRVaYON2+DF21l2lSmgdQb23L3Yqa2IuPIuN+McHYsnINJ6mW/iqIOAphK+p8NSCzi2+bNsG9vQ8qefxnZlzYhJ80nr+EFNnjdtRF7IrEGIz5H4KV2lWlx8qg5De97Ienzh3KG05uO6tymzi/Lj3AWbvNof4oCr75lwqpv0VwGlfoK0tThbovuqpOJFqtabvaLKLLew2ObFgSQMF7JeCKPOITX7FpMHsSSsa9eC7tLrhRn/036qIb5vN8iYJR+eNZlbFRJRreLNIO1DGvrcFjgTS7RZWiF7viMEcj7ypsmXeAmOrVRARGnzUk0+fn/p
     arista@toronto-day2-20-1c55ad53-eos
+logging:
+  vrfs:
+  - name: default
+    source_interface: Management0
+    hosts:
+    - name: 10.200.0.108
+      protocol: udp
+    - name: 10.200.1.108
+      protocol: udp
 loopback_interfaces:
 - name: Loopback0
   description: ROUTER_ID
@@ -164,6 +203,8 @@ router_ospf:
     bfd_enable: false
     no_passive_interfaces:
     - Vlan4093
+    - Ethernet7
+    - Ethernet8
     max_lsa: 12000
     redistribute:
       connected:
