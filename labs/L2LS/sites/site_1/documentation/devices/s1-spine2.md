@@ -3,7 +3,6 @@
 ## Table of Contents
 
 - [Management](#management)
-  - [Banner](#banner)
   - [Management Interfaces](#management-interfaces)
   - [DNS Domain](#dns-domain)
   - [IP Name Servers](#ip-name-servers)
@@ -16,7 +15,6 @@
   - [AAA Authorization](#aaa-authorization)
 - [Monitoring](#monitoring)
   - [TerminAttr Daemon](#terminattr-daemon)
-  - [Logging](#logging)
 - [MLAG](#mlag)
   - [MLAG Summary](#mlag-summary)
   - [MLAG Device Configuration](#mlag-device-configuration)
@@ -48,15 +46,6 @@
   - [VRF Instances Device Configuration](#vrf-instances-device-configuration)
 
 ## Management
-
-### Banner
-
-#### MOTD Banner
-
-```text
-You shall not pass. Unless you are authorized. Then you shall pass.
-EOF
-```
 
 ### Management Interfaces
 
@@ -188,7 +177,6 @@ management api http-commands
 ```eos
 !
 username arista privilege 15 role network-admin secret sha512 <removed>
-username arista ssh-key ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCOHFd5aTvmRI7MLNZv9oG6jeRVaYON2+DF21l2lSmgdQb23L3Yqa2IuPIuN+McHYsnINJ6mW/iqIOAphK+p8NSCzi2+bNsG9vQ8qefxnZlzYhJ80nr+EFNnjdtRF7IrEGIz5H4KV2lWlx8qg5De97Ienzh3KG05uO6tymzi/Lj3AWbvNof4oCr75lwqpv0VwGlfoK0tThbovuqpOJFqtabvaLKLLew2ObFgSQMF7JeCKPOITX7FpMHsSSsa9eC7tLrhRn/036qIb5vN8iYJR+eNZlbFRJRreLNIO1DGvrcFjgTS7RZWiF7viMEcj7ypsmXeAmOrVRARGnzUk0+fn/p arista@toronto-day2-20-1c55ad53-eos
 ```
 
 ### Enable Password
@@ -229,31 +217,6 @@ aaa authorization exec default local
 daemon TerminAttr
    exec /usr/bin/TerminAttr -cvaddr=192.168.0.5:9910 -cvauth=token,/tmp/token -cvvrf=default -disableaaa -smashexcludes=ale,flexCounter,hardware,kni,pulse,strata -taillogs -cvsourceintf=Management0
    no shutdown
-```
-
-### Logging
-
-#### Logging Servers and Features Summary
-
-| Type | Level |
-| -----| ----- |
-
-| VRF | Source Interface |
-| --- | ---------------- |
-| default | Management0 |
-
-| VRF | Hosts | Ports | Protocol | SSL-profile |
-| --- | ----- | ----- | -------- | ----------- |
-| default | 10.200.0.108 | Default | UDP | - |
-| default | 10.200.1.108 | Default | UDP | - |
-
-#### Logging Servers and Features Device Configuration
-
-```eos
-!
-logging host 10.200.0.108
-logging host 10.200.1.108
-logging source-interface Management0
 ```
 
 ## MLAG
@@ -360,8 +323,8 @@ vlan 4094
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | Channel-Group |
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | ------------- |
 | Ethernet1 | MLAG_s1-spine1_Ethernet1 | *trunk | *- | *- | *MLAG | 1 |
-| Ethernet2 | L2_s1-leaf1_Ethernet3 | *trunk | *10,20 | *- | *- | 2 |
-| Ethernet3 | L2_s1-leaf2_Ethernet3 | *trunk | *10,20 | *- | *- | 2 |
+| Ethernet2 | L2_s1-leaf1_Ethernet3 | *trunk | *10 | *- | *- | 2 |
+| Ethernet3 | L2_s1-leaf2_Ethernet3 | *trunk | *10 | *- | *- | 2 |
 | Ethernet4 | L2_s1-leaf3_Ethernet3 | *trunk | *20 | *- | *- | 4 |
 | Ethernet5 | L2_s1-leaf4_Ethernet3 | *trunk | *20 | *- | *- | 4 |
 | Ethernet6 | MLAG_s1-spine1_Ethernet6 | *trunk | *- | *- | *MLAG | 1 |
@@ -437,7 +400,7 @@ interface Ethernet8
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | LACP Fallback Timeout | LACP Fallback Mode | MLAG ID | EVPN ESI |
 | --------- | ----------- | ---- | ----- | ----------- | ------------| --------------------- | ------------------ | ------- | -------- |
 | Port-Channel1 | MLAG_s1-spine1_Port-Channel1 | trunk | - | - | MLAG | - | - | - | - |
-| Port-Channel2 | L2_RACK1_Port-Channel2 | trunk | 10,20 | - | - | - | - | 2 | - |
+| Port-Channel2 | L2_RACK1_Port-Channel2 | trunk | 10 | - | - | - | - | 2 | - |
 | Port-Channel4 | L2_RACK2_Port-Channel2 | trunk | 20 | - | - | - | - | 4 | - |
 
 #### Port-Channel Interfaces Device Configuration
@@ -454,7 +417,7 @@ interface Port-Channel1
 interface Port-Channel2
    description L2_RACK1_Port-Channel2
    no shutdown
-   switchport trunk allowed vlan 10,20
+   switchport trunk allowed vlan 10
    switchport mode trunk
    switchport
    mlag 2
